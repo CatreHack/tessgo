@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tessgo - Juego de Estrategia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Pantalla de inicio -->
+    <div id="startScreen" class="screen">
+        <div class="container">
+            <div class="start-content">
+                <h1>TESSGO</h1>
+                <h2>Juego de Estrategia para Dos Jugadores</h2>
+                
+                <div class="rules-card card">
+                    <div class="card__body">
+                        <h3>Reglas del Juego</h3>
+                        <ul class="rules-list">
+                            <li>Tablero de 6x6 casillas (A-F, 1-6)</li>
+                            <li>Cada jugador tiene 18 fichas</li>
+                            <li>Turno inicial: el primer jugador coloca una ficha libremente</li>
+                            <li>Después de cada colocación, el oponente puede tirar dados para intentar "comer" esa ficha (1 punto) y luego colocar su ficha</li>
+                            <li>Captura por dados: coincidencia exacta de la tirada con una casilla ocupada por el rival (1 punto)</li>
+                            <li>Captura por rodeamiento: fichas enemigas completamente rodeadas (2 puntos por ficha rodeada)</li>
+                            <li>Gana quien tenga más puntos al final (puntos por comer y por rodear)</li>
+                        </ul>
+                        
+                        <label for="modeSelect">Modo de juego</label>
+                        <select id="modeSelect" class="form-control">
+                            <option value="rodeo">Modo Rodeo (solo rodeo interno)</option>
+                            <option value="encerrado">Modo Encerrado (rodeo + encierro contra bordes)</option>
+                        </select>
+                        
+                        <button class="btn btn--primary btn--lg btn--full-width start-btn" id="startGameBtn">
+                            Comenzar Partida
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de juego -->
+    <div id="gameScreen" class="screen hidden">
+        <div class="container">
+            <div class="game-layout">
+                
+                <!-- Panel de información -->
+                <div class="info-panel">
+                    <div class="players-info">
+                        <div class="player-card" id="player1Card">
+                            <h3>Jugador 1</h3>
+                            <div class="player-color player1-color"></div>
+                            <div class="player-stats">
+                                <div class="stat">Fichas: <span id="player1Pieces">18</span></div>
+                                <div class="stat">Puntos: <span id="player1Captures">0</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="player-card" id="player2Card">
+                            <h3>Jugador 2</h3>
+                            <div class="player-color player2-color"></div>
+                            <div class="player-stats">
+                                <div class="stat">Fichas: <span id="player2Pieces">18</span></div>
+                                <div class="stat">Puntos: <span id="player2Captures">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="turn-info card">
+                        <div class="card__body">
+                            <h3 id="turnIndicator">Turno: Jugador 1</h3>
+                            <p id="phaseIndicator">Coloca tu ficha libremente</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dice-panel card">
+                        <div class="card__body">
+                            <h4>Dados</h4>
+                            <div class="dice-container">
+                                <div class="die">
+                                    <span id="numberResult">?</span>
+                                </div>
+                                <div class="die">
+                                    <span id="letterResult">?</span>
+                                </div>
+                            </div>
+                            <button class="btn btn--secondary btn--lg dice-btn" id="rollDiceBtn" disabled>
+                                Tirar Dados
+                            </button>
+                            <div id="diceResult" class="dice-result hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="game-status">
+                        <div id="gameMessage" class="status status--info">¡Preparando el juego!</div>
+                    </div>
+                    
+                    <button class="btn btn--outline btn--lg new-game-btn" id="newGameBtn">Nueva Partida</button>
+                </div>
+
+                <!-- Tablero de juego -->
+                <div class="board-section">
+                    <div class="board-container">
+                        <!-- Etiquetas de columnas -->
+                        <div class="column-labels">
+                            <div class="corner-space"></div>
+                            <div class="label">A</div>
+                            <div class="label">B</div>
+                            <div class="label">C</div>
+                            <div class="label">D</div>
+                            <div class="label">E</div>
+                            <div class="label">F</div>
+                        </div>
+                        
+                        <!-- Tablero con etiquetas de fila -->
+                        <div class="board-with-labels">
+                            <div class="row-labels">
+                                <div class="label">1</div>
+                                <div class="label">2</div>
+                                <div class="label">3</div>
+                                <div class="label">4</div>
+                                <div class="label">5</div>
+                                <div class="label">6</div>
+                            </div>
+                            
+                            <div class="game-board" id="gameBoard">
+                                <!-- Las casillas se generarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de victoria -->
+    <div id="victoryModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="victoryTitle">¡Fin del Juego!</h2>
+            <div id="victoryMessage" class="victory-details"></div>
+            <div class="modal-buttons">
+                <button class="btn btn--primary btn--lg" id="playAgainBtn">Jugar Otra Vez</button>
+                <button class="btn btn--secondary btn--lg" id="closeModalBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay del modal -->
+    <div id="modalOverlay" class="modal-overlay hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
